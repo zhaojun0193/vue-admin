@@ -1,7 +1,6 @@
 <template>
   <div id="app">
     <div>
-      666
       <router-view/>
     </div>
   </div>
@@ -13,6 +12,6 @@
 
 <style>
 #app {
-
+  display: block;
 }
 </style>
