@@ -9,8 +9,12 @@
                     <label>邮箱</label>
                     <el-input type="text" v-model="ruleForm.email" autocomplete="off" size="medium"></el-input>
                 </el-form-item>
-                <el-form-item prop="checkPass" class="item-form">
+                <el-form-item prop="password" class="item-form">
                     <label>密码</label>
+                    <el-input type="password" v-model="ruleForm.password" autocomplete="off"  size="medium" minlength='6' maxlength='20'></el-input>
+                </el-form-item>
+                <el-form-item prop="checkPass" class="item-form" v-show="ruleForm.isShowCheckPass">
+                    <label>重复密码</label>
                     <el-input type="password" v-model="ruleForm.checkPass" autocomplete="off"  size="medium" minlength='6' maxlength='20'></el-input>
                 </el-form-item>
                 <el-form-item prop="vCode" class="item-form">
@@ -29,34 +33,45 @@
 </template>
 
 <script>
+import {validateEmailStr,validatePasswordStr,validateVCode} from '@/utils/validate';
 export default {
     name: 'login',
     data(){
       var validateEmail = (rule, value, callback) => {
-        let reg = /^[A-Za-z\d]+([-_.][A-Za-z\d]+)*@([A-Za-z\d]+[-.])+[A-Za-z\d]{2,4}$/;
         if (value === '') {
           callback(new Error('请输入邮箱'));
-        } else if(!reg.test(value)){
+        } else if(!validateEmailStr(value)){
           callback(new Error('请输入正确的邮箱'));
         }else{
             callback();
         }
       };
       var validatePass = (rule, value, callback) => {
-        let reg = /^.*(?=.{6,20})(?=.*\d)(?=.*[A-Z])(?=.*[a-z])(?=.*[!@#$%^&*? ]).*$/;
         if (value === '') {
           callback(new Error('请输入密码'));
-        }else if(!reg.test(value)){
+        }else if(!validatePasswordStr(value)){
             callback(new Error('6-20位，包含大写字母，小写字母，数字，特殊字符'));
         }else{
           callback();
         }
       };
+      var validateCheckPass = (rule, value, callback) => {
+        if(this.ruleForm.isShowCheckPass){
+          if (value === '') {
+            callback(new Error('请再次输入密码'));
+          }else if(!validatePasswordStr(value)){
+              callback(new Error('6-20位，包含大写字母，小写字母，数字，特殊字符'));
+          }else if(this.ruleForm.password != value){
+              callback(new Error('两次输入的密码不一致'));
+          }else{
+            callback();
+          }
+        }
+      };
       var checkVCode = (rule, value, callback) => {
-        let reg = /^[a-z\d]{6}$/;
         if (value === '') {
           return callback(new Error('验证码不能为空'));
-        }else if (!reg.test(value)){
+        }else if (!validateVCode(value)){
             return callback(new Error('验证码格式不正确'));
         }else{
             callback();
@@ -64,21 +79,26 @@ export default {
       };
       return {
         menuTab:[
-                {txt:'登录',isActive:true},
+                {txt:'登录',isActive:true}, 
                 {txt:'注册',isActive:false}
             ],
         isActive: true,
         ruleForm: {
           email: '',
+          password: '',
           checkPass: '',
+          isShowCheckPass:false,
           vCode: ''
         },
         rules: {
           email: [
             { validator: validateEmail, trigger: 'blur' }
           ],
-          checkPass: [
+          password: [
             { validator: validatePass, trigger: 'blur' }
+          ],
+          checkPass: [
+            { validator: validateCheckPass, trigger: 'blur' }
           ],
           vCode: [
             { validator: checkVCode, trigger: 'blur' }
@@ -92,6 +112,11 @@ export default {
                 menu.isActive = false
             })
             data.isActive = true
+            if(data.txt ==='注册'){
+              this.ruleForm.isShowCheckPass = true
+            }else{
+              this.ruleForm.isShowCheckPass = false
+            }
         },
         submitForm(formName) {
         this.$refs[formName].validate((valid) => {
