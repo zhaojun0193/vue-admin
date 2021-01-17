@@ -30,7 +30,7 @@ module.exports = {
         modules: false        //启用CSS modules for all css / pre-processor files.
     },
     devServer: {    //环境配置
-        host: 'localhost',
+        host: '154.209.95.34',
         port: 8080,
         https: false,      //是否开启https
         hotOnly: false, //是否配置热更新
