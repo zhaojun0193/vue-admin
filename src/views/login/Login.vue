@@ -43,7 +43,7 @@
 <script>
 import {validateEmailStr, validatePasswordStr, validateVCode} from '@/utils/validate';
 import {reactive, ref, isRef, isReactive, onMounted} from '@vue/composition-api'
-
+import axios from 'axios'
 export default {
   name: 'login',
   setup(prpos, ctx) {
@@ -137,6 +137,9 @@ export default {
     })
 
     const submitForm = (formName => {
+
+      axios.get('xxx')
+
       ctx.refs[formName].validate((valid) => {
         if (valid) {
           alert('submit!');
