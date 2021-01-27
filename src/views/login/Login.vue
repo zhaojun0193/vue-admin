@@ -16,7 +16,7 @@
           <el-input type="password" v-model="ruleForm.password" autocomplete="off" size="medium" minlength='6'
                     maxlength='20'></el-input>
         </el-form-item>
-        <el-form-item prop="checkPass" class="item-form" v-show="ruleForm.isShowCheckPass">
+        <el-form-item prop="checkPass" class="item-form" v-if="ruleForm.isShowCheckPass">
           <label>重复密码</label>
           <el-input type="password" v-model="ruleForm.checkPass" autocomplete="off" size="medium" minlength='6'
                     maxlength='20'></el-input>
@@ -47,7 +47,6 @@ import {reactive, ref, isRef, isReactive, onMounted} from '@vue/composition-api'
 export default {
   name: 'login',
   setup(prpos, ctx) {
-
     let validateEmail = (rule, value, callback) => {
       if (value === '') {
         callback(new Error('请输入邮箱'));
@@ -72,7 +71,7 @@ export default {
           callback(new Error('请再次输入密码'));
         } else if (!validatePasswordStr(value)) {
           callback(new Error('6-20位，包含大写字母，小写字母，数字，特殊字符'));
-        } else if (ruleForm.password != value) {
+        } else if (ruleForm.password !== value) {
           callback(new Error('两次输入的密码不一致'));
         } else {
           callback();
@@ -134,18 +133,12 @@ export default {
         menu.isActive = false
       })
       data.isActive = true
-      if (data.txt === '注册') {
-        ruleForm.isShowCheckPass = true
-      } else {
-        ruleForm.isShowCheckPass = false
-      }
+      ruleForm.isShowCheckPass = data.txt === '注册';
     })
 
     const submitForm = (formName => {
       ctx.refs[formName].validate((valid) => {
-        console.log(valid)
         if (valid) {
-          console.log(valid)
           alert('submit!');
         } else {
           console.log('error submit!!');
